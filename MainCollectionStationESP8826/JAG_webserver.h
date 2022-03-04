@@ -8,6 +8,8 @@
 
 #include "Arduino.h"
 #include <ESP8266WebServer.h>
+#include <ArduinoJson.h>
+
 
 class JAG_webserver
 {
@@ -24,7 +26,7 @@ class JAG_webserver
     int port_;
     bool logSerial_;
 
-    void processReceivedStrings(String strings[3]);
+    void processReceivedStrings(DynamicJsonDocument doc);
     String createStationInfo(String stationNumber);
     String createBadgingInfo();
     String showNiceLastConnect(unsigned long last_connect);

@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include <ArduinoJson.h>
 
 #include "JAG_webserver.h"
  // initialise
@@ -90,21 +91,24 @@ void JAG_webserver::setupRoutes() {
       return;
     }
     String message = webserver.arg("plain");
-    char str_array[message.length()];
-    message.toCharArray(str_array, message.length());
-    String strings[3];
-    char * token;
-    byte index = 0;
-    token = strtok(str_array, "_");
+//    char str_array[message.length()];
+//    message.toCharArray(str_array, message.length());
+//    String strings[3];
+//    char * token;
+//    byte index = 0;
+//    token = strtok(str_array, "_");
+//
+//    while (token != NULL) {
+//
+//      strings[index] = token;
+//      index++;
+//      token = strtok(NULL, "_");
+//    }
+//
 
-    while (token != NULL) {
-
-      strings[index] = token;
-      index++;
-      token = strtok(NULL, "_");
-    }
-
-    processReceivedStrings(strings);
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, message);
+      processReceivedStrings(doc);
     webserver.send(200, "text/plain", message);
 
   });
@@ -114,7 +118,12 @@ void JAG_webserver::setupRoutes() {
       webserver.send(200, "text/plain", "Body not received");
       return;
     }
-    String username = webserver.arg("plain");
+    String message = webserver.arg("plain");
+  DynamicJsonDocument doc(1024);
+      deserializeJson(doc, message);
+
+      String username = doc["username"];
+    
   
 
     bool userFound = false;
@@ -163,11 +172,12 @@ void JAG_webserver::setupRoutes() {
   });
 }
 
-void JAG_webserver::processReceivedStrings(String strings[3]) {
-  String item_number = strings[0];
-  String item_name = strings[1];
-  String item_type = strings[2];
-  String item_value = strings[3];
+void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
+
+  String item_number = doc["station_id"];
+  String item_name = doc["station_name"];
+  String item_type = doc["sensor_type"];
+  String item_value = doc["sensor_value"];
 
   if (item_number == "1") {
     remote1_name = item_name;

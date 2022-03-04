@@ -19,6 +19,8 @@ JAG_wificlient wifi_client = JAG_wificlient("CHALETEMMANUEL","LOCKEDDOWN", true)
 JAG_webserver webserver = JAG_webserver(80, true);
 JAG_NFC NFC_reader = JAG_NFC(true);
 JAG_httpclient httpClient = JAG_httpclient(true, remote_server_ip);
+
+
 JAG_gas gas_sensor = JAG_gas(A0, 600, true);
 
 
@@ -65,6 +67,7 @@ void loop() {
   //run the cron job to update the details to the remote station
   cronJob();
 }
+
 void cronJob() {
   unsigned long currentTime = millis();
   
