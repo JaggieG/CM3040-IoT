@@ -41,8 +41,6 @@ void cronJob() {
 
   if (currentTime - previousTime >= eventInterval) {
     Serial.println("Sending values to the Remote Station");
-    httpClient.sendAllValues("10", "5");
-    NFC_reader.resetLastSeenBadge();
     previousTime = currentTime;
   }
 

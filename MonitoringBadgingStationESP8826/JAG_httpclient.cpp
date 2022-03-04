@@ -5,7 +5,7 @@
 
 // initialise
 
-JAG_httpclient::JAG_httpclient(bool logSerial, String remoteStationIP)
+JAG_httpclient::JAG_httpclient(String remoteStationIP,bool logSerial)
 {
   HTTPClient http;  //Declare an object of class HTTPClient
   logSerial_ = logSerial;
@@ -36,9 +36,10 @@ void JAG_httpclient::sendLocalTemperatureValuesToRemoteStation(String Temperatur
     serializeJson(doc, json);
 
     
-  
+   if (logSerial_) {
     Serial.println(json); 
     Serial.println(remote_server_address);
+   }
 
     int httpCode = http.POST(json); 
     
@@ -60,9 +61,10 @@ void JAG_httpclient::sendLocalHumidityValuesToRemoteStation(String Humidity) {
       
     String json;
     serializeJson(doc, json);
-    
+     if (logSerial_) {
     Serial.println(json); 
     Serial.println(remote_server_address); 
+     }
     
     http.begin(wifiClient, remote_server_address);  //Specify request destination
     
@@ -71,7 +73,9 @@ void JAG_httpclient::sendLocalHumidityValuesToRemoteStation(String Humidity) {
     http.addHeader("Content-Type", "application/json");
     if (httpCode > 0) { //Check the returning code
       String payload = http.getString();   //Get the request response payload
+       if (logSerial_) {
       Serial.println(payload);             //Print the response payload
+       }
     }
     http.end();   //Close connection
 }
@@ -86,9 +90,10 @@ void JAG_httpclient::sendAggregateCardValueToRemoteStation(String username) {
       
     String json;
     serializeJson(doc, json);
-
+ if (logSerial_) {
     Serial.println(remote_server_address); 
     Serial.println(username);
+ }
     http.begin(wifiClient, remote_server_address);  //Specify request destination
     
     int httpCode = http.POST(json); 
@@ -96,7 +101,9 @@ void JAG_httpclient::sendAggregateCardValueToRemoteStation(String username) {
     http.addHeader("Content-Type", "text/plain");
     if (httpCode > 0) { //Check the returning code
       String payload = http.getString();   //Get the request response payload
+       if (logSerial_) {
       Serial.println(payload);             //Print the response payload
+       }
     }
     http.end();   //Close connection
 
@@ -113,8 +120,10 @@ void JAG_httpclient::sendLastUpdateCardValueToRemoteStation(String username) {
       
     String json;
     serializeJson(doc, json);
+     if (logSerial_) {
     Serial.println(remote_server_address); 
     Serial.println(username);
+     }
     http.begin(wifiClient, remote_server_address);  //Specify request destination
     
     int httpCode = http.POST(json); 
@@ -122,7 +131,9 @@ void JAG_httpclient::sendLastUpdateCardValueToRemoteStation(String username) {
     http.addHeader("Content-Type", "text/plain");
     if (httpCode > 0) { //Check the returning code
       String payload = http.getString();   //Get the request response payload
+       if (logSerial_) {
       Serial.println(payload);             //Print the response payload
+       }
     }
     http.end();   //Close connection
 
@@ -130,18 +141,30 @@ void JAG_httpclient::sendLastUpdateCardValueToRemoteStation(String username) {
 
 void JAG_httpclient::sendGasSensorValueToRemoteStation(String gasValue) {
       String remote_server_address = "http://"  + remoteStationIP_ + "/update";
-    String identString = localIdent_ + "_" + localStationName_ + "_" +  "GAS_" + gasValue + "_END";
   
+      StaticJsonDocument<200> doc;
+      doc["station_id"] = localIdent_;
+      doc["station_name"] = localStationName_;
+      doc["sensor_type"] = "GAS";
+      doc["sensor_value"] = gasValue;
+
+  String json;
+    serializeJson(doc, json);
+   
+     if (logSerial_) {
     Serial.println(remote_server_address); 
     Serial.println(gasValue);
+     }
     http.begin(wifiClient, remote_server_address);  //Specify request destination
     
-    int httpCode = http.POST(identString); 
+    int httpCode = http.POST(json); 
     
     http.addHeader("Content-Type", "text/plain");
     if (httpCode > 0) { //Check the returning code
       String payload = http.getString();   //Get the request response payload
+       if (logSerial_) {
       Serial.println(payload);             //Print the response payload
+       }
     }
     http.end();   //Close connection
 

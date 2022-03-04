@@ -91,21 +91,6 @@ void JAG_webserver::setupRoutes() {
       return;
     }
     String message = webserver.arg("plain");
-//    char str_array[message.length()];
-//    message.toCharArray(str_array, message.length());
-//    String strings[3];
-//    char * token;
-//    byte index = 0;
-//    token = strtok(str_array, "_");
-//
-//    while (token != NULL) {
-//
-//      strings[index] = token;
-//      index++;
-//      token = strtok(NULL, "_");
-//    }
-//
-
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, message);
       processReceivedStrings(doc);
