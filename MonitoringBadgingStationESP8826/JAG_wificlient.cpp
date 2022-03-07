@@ -1,3 +1,9 @@
+/*
+ * JAG_wificlient.cpp
+ * Implementation file for the wifi client
+ * Just a wrapper to make it easier to connect to WiFi
+ */
+
 #include "Arduino.h"
 #include "JAG_wificlient.h"
 

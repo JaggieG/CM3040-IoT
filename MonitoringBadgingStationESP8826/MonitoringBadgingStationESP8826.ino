@@ -1,6 +1,8 @@
 /*
  * This sketch if for the Remote Monitroing stations
- * It relies on a 
+ * 
+ * HARDWARE dependancies
+ * 
  * RFID sensor plugged in via Serial
  * A Gas Sensor plugged in via ANALOG
  * A DHT sensor Plugged in via DIGITAL
@@ -42,22 +44,7 @@
 #include "JAG_httpclient.h"
 #include "DHT.h"
 
-/* 
-  MARKER
-
-  Please change the IP address of the Dashboard collector here.
-  this is where the data is sent to.
-
-*/
-String remote_server_ip = "192.168.1.133";
-
-/* As we don't want to run certain jobs at every iteration of the loop() function 
- * TGhis should not be set too low in order to avoid overloading the micro controller
-*/
-const unsigned long eventInterval = 30 * 1000; // every thirty seconds
-unsigned long previousTime = 0;
-
-/* GLOBAL VARIABLES
+/* EDITABLE GLOBAL VARIABLES
  *  
  * logSerial = should we log details to the serial port
  * station_id = the id the station will have when it send the data to the data collector - this should be unique and can be 1,2 or 3
@@ -65,6 +52,9 @@ unsigned long previousTime = 0;
  * http_server_port = the port that the http server will run on (normally 80) - change for security.
  * wirelessSSID = the SSID of the wireless network the micro controller should join.
  * wirelessKey = the key of the wireless netwok that the micro controller sould join.
+ * GASPIN = the analog pin for the gas sensor
+ * DHTPIN = the digital pin for the DHT sensor
+ * DHTTYPE = the type of the DHT (DHT22 / DHT11)
 */
 
 bool logSerial = true;
@@ -73,9 +63,19 @@ String station_name = "My Desk Left";
 char* wirelessSSID = "CHALETEMMANUEL";
 char* wirelessKey = "LOCKEDDOWN";
 int http_server_port = 80;
+String remote_server_ip = "192.168.1.133";
 
-/* END GLOBAL VARIABLES */
+#define GASPIN A0 // Analog pin for the gas sensor
+#define DHTPIN D4 // what digital pin the DHT22 is connected to
+#define DHTTYPE DHT22 // there are multiple kinds of DHT sensors
 
+/* END EDITABLE GLOBAL VARIABLES */
+
+/* As we don't want to run certain jobs at every iteration of the loop() function 
+ * This should not be set too low in order to avoid overloading the micro controller
+*/
+const unsigned long eventInterval = 30 * 1000; // every thirty seconds
+unsigned long previousTime = 0;
 int dots = 0;
 
 /* Module Variables
@@ -88,11 +88,10 @@ JAG_wificlient wifi_client = JAG_wificlient(wirelessSSID, wirelessKey, logSerial
 JAG_webserver webserver = JAG_webserver(http_server_port, station_name, logSerial);
 JAG_NFC NFC_reader = JAG_NFC(logSerial);
 JAG_httpclient httpClient = JAG_httpclient(remote_server_ip, logSerial, station_id, station_name);
-JAG_gas gas_sensor = JAG_gas(A0, 600, logSerial);
+JAG_gas gas_sensor = JAG_gas(GASPIN, logSerial);
 
 /* DHT sensor info */
-#define DHTPIN 4 // what digital pin the DHT22 is conected to
-#define DHTTYPE DHT22 // there are multiple kinds of DHT sensors
+
 DHT dht(DHTPIN, DHTTYPE);
 
 

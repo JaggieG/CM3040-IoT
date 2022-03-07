@@ -37,7 +37,7 @@ JAG_NFC::JAG_NFC(bool logSerial) {
 }
 
 
-//Here we run the setup of the
+//Here we run the setup of the chip and log items out to the serial console as required.
 void JAG_NFC::setup() {
   SPI.begin(); // Init SPI bus
   rfid.PCD_Init(); // Init MFRC522
@@ -67,6 +67,16 @@ void JAG_NFC::setup() {
   lastCardReadNow = millis();
 }
 
+/*
+ *  This function runs via the main sketch file loop() function
+ *  It checks whether there is a card in front fo the reader
+ *  if so then it reads it and returns the card holder name
+ *  
+ *  Any actiosn that happen in the loop() wwill stop the reader picking up the card
+ *  as it runs syncrohously
+ * 
+ * 
+ */
 String JAG_NFC::loop() {
   // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
   if (!rfid.PICC_IsNewCardPresent()) {
@@ -159,6 +169,7 @@ String JAG_NFC::getUsernameOfCardIfKnown(String cardHex) {
   return username;
 }
 
+// Details of the cards
 void JAG_NFC::createArrayOfKnownCards() {
   arrayOfKnownCards[0] = "97e98d62_John Doe";
   arrayOfKnownCards[1] = "b3339c0d_Jane Doe";

@@ -1,7 +1,9 @@
 /*
-  JAG_webserver.h - Library for handling web server for ESP8826
-  Created by John Gerhardt  10/10/2021
-*/
+ * JAG_webserver.h
+ * Header file for the webserver
+ * The webserver is responsble for showing data about this node via an web browser
+ */
+ 
 
 #ifndef JAG_webserver_h
 #define JAG_webserver_h
@@ -20,8 +22,6 @@ class JAG_webserver
     String get404PageContents();
     String getRootPageContents();
     String createHTMLpageWithContent_(String theContent);
-
-       
     void addGasValueToArray(String value);
     void addTempValueToArray(String value);
     void addHumidityValueToArray(String value);
@@ -30,8 +30,6 @@ class JAG_webserver
   private:
     int port_;
     bool logSerial_;
-
-
     String my_TEMP;
     String my_TEMP_history[100];
     String my_HUMIDITY;
@@ -42,11 +40,9 @@ class JAG_webserver
     String my_lastbadge;
     bool my_showing;
     unsigned long my_lastconnect;
-    
     String createJSDataForGAS();
     String createJSDataForTEMP();
     String createJSDataForHUMIDITY();  
-
     String createStationInfo();
     String showNiceLastConnect(unsigned long last_connect);
 };

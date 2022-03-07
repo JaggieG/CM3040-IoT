@@ -1,9 +1,16 @@
-#include "Arduino.h"
+
+/*
+ * JAG_httpclient.cpp
+ * Implementation file for the http client
+ * The http client is resposbile for sending data over HTTP / JSON to the collector station
+ */
+
 #include "JAG_httpclient.h"
+#include "Arduino.h"
 #include <WiFiClient.h>
 #include <ArduinoJson.h>
 
-// initialise
+// initialise and get glval variables from the main sketch file
 
 JAG_httpclient::JAG_httpclient(String remoteStationIP, bool logSerial, String localIdent, String localSationName)
 {
@@ -12,12 +19,12 @@ JAG_httpclient::JAG_httpclient(String remoteStationIP, bool logSerial, String lo
   remoteStationIP_ = remoteStationIP;
   localIdent_ = localIdent;
   localStationName_ = localSationName;
-  WiFiClient wifiClient;
-
+  WiFiClient wifiClient; // we need an instance of the wifi client
 }
 
 // Public Functions
 
+// helper funciton to send the temp and humidity to the remote server
 void JAG_httpclient::sendAllValues(String Temperature, String Humidity) {
   sendLocalTemperatureValuesToRemoteStation(Temperature);
   sendLocalHumidityValuesToRemoteStation(Humidity);

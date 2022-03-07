@@ -1,7 +1,8 @@
 /*
-  JAG_webserver.h - Library for handling web server for ESP8826
-  Created by John Gerhardt  10/10/2021
-*/
+ * JAG_wificlient.h
+ * Header file for the wifi client
+ * Just a wrapper to make it easier to connect to WiFi
+ */
 
 #ifndef JAG_wificlient_h
 #define JAG_wificlient_h

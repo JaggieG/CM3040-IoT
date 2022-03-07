@@ -1,7 +1,7 @@
 /*
-  JAG_webserver.h - Library for handling MQ-2
-  Created by John Gerhardt  10/10/2021
-*/
+ * JAG_gas.h
+ * header file for the gas Chip 
+ */
 
 #ifndef JAG_gas_h
 #define JAG_gas_h
@@ -11,13 +11,12 @@
 class JAG_gas
 {
   public:
-    JAG_gas(int gasSensorInput_, int sensorThreshold_, bool logSerial_);
+    JAG_gas(int gasSensorInput_, bool logSerial_);
     void setupGasSensor();
     int getGasValue();
   private:
     bool logSerial;
-    int gasSensorInput;
-    int sensorThreshold;
+    int gasSensorInput;  
 };
 
 #endif

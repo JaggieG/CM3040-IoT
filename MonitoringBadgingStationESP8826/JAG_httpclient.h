@@ -1,4 +1,9 @@
 
+/*
+ * JAG_httpclient.h
+ * Header file for the http client
+ * The http client is resposbile for sending data over HTTP / JSON to the collector station
+ */
 
 #ifndef JAG_httpclient_h
 #define JAG_httpclient_h

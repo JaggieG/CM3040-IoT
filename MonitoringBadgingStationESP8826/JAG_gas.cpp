@@ -1,11 +1,14 @@
+/*
+ * JAG_NFC.cpp
+ * Implementation file for the gas Chip 
+ */
 #include "Arduino.h"
 #include "JAG_gas.h"
 // initialise
 
-JAG_gas::JAG_gas(int gasSensorInput_, int sensorThreshold_, bool logSerial_) 
+JAG_gas::JAG_gas(int gasSensorInput_, bool logSerial_) 
 {
  gasSensorInput = gasSensorInput_;
- sensorThreshold = sensorThreshold_;
  logSerial = logSerial_;
 }
 
