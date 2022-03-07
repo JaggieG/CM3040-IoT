@@ -26,13 +26,14 @@ It relies on a
 String remote_server_ip = "192.168.1.139";
 
 /* As we don't want to run certain jobs at every iteration of the loop() function  */
-const unsigned long eventInterval = 5 * 1000; // every thirty seconds
+const unsigned long eventInterval = 30 * 1000; // every thirty seconds
 unsigned long previousTime = 0;
 
 /* should we log details to the serial port? */
 bool logSerial = true;
-String station_id = "2";
+String station_id = "1";
 String station_name = "My Desk Left";
+int dots = 0;
 
 char* wirelessSSID = "CHALETEMMANUEL";
 char* wirelessKey = "LOCKEDDOWN";
@@ -77,25 +78,40 @@ void setup() {
 // The main loop 
 
 void loop() {
-  // setup and web server the respond to web requests in the loop
-  webserver.runServerInLoop();
+   printDots(); // So we know that we are alive and waiting
 
-  // Make sure that the NFC reader is watching for new badge
+   // Make sure that the NFC reader is watching for new badge
   String cardUsername = NFC_reader.loop();
+    
   //looks like a card was badged, we should tell the remote station
   if (cardUsername != "") {
     Serial.println("Card Username is: " + cardUsername);
     httpClient.sendCardValueToRemoteStation(cardUsername);
-    webserver.updateLocalLastBadged(cardUsername);
+    webserver.updateLocalLastBadged(cardUsername); 
+    dots = 0;
   }
-
-  //run the cron job to update the details to the remote station
-  cronJob();
+    // setup and web server the respond to web requests in the loop
+    webserver.runServerInLoop();
+    //run the cron job to update the details to the remote station
+    cronJob();
 }
 
+void printDots() {
+  int maxDots = 20;
+String dotsString = "";
+  for (int i=0; i < dots; i++) {
+        dotsString += ".";
+  }
+ Serial.println(dotsString);
+ if (maxDots > dots) {
+  dots++;
+ } else {
+  dots = 0;
+ }
+ 
+}
 void cronJob() {
   unsigned long currentTime = millis();
-
   if (currentTime - previousTime >= eventInterval) {
 
     int h = dht.readHumidity();

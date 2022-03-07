@@ -81,10 +81,13 @@ String JAG_NFC::loop() {
       String username = getUsernameOfCardIfKnown(cardHex);
       return username;
     } else {
-      //Serial.println("Same card within threshold");
+      if (logSerial_) {
+        Serial.println("Same card within threshold");
+      }
       return "";
     }
   } else {
+   
     lastCardRead = cardHex;
     lastCardReadNow = millis();
     String username = getUsernameOfCardIfKnown(cardHex);

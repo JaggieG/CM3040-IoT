@@ -171,8 +171,6 @@ void JAG_httpclient::sendGasSensorValueToRemoteStation(String gasValue) {
 
 }
 
-
-
 void JAG_httpclient::sendCardValueToRemoteStation(String username) {
   sendAggregateCardValueToRemoteStation(username);
   sendLastUpdateCardValueToRemoteStation(username);

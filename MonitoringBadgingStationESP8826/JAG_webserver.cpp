@@ -27,6 +27,7 @@ void JAG_webserver::setup() {
 
 void JAG_webserver::runServerInLoop() {
   webserver.handleClient();
+  return;
 }
 
 String JAG_webserver::get404PageContents() {
