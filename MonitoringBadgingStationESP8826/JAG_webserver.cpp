@@ -9,6 +9,7 @@ JAG_webserver::JAG_webserver(int port, String my_name_, bool logSerial)
   logSerial_ = logSerial;
   my_showing = false;
   my_name = my_name_;
+  my_lastbadge = "";
   ESP8266WebServer webserver_(port_);
 }
 
@@ -147,7 +148,7 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
     HTML_Content += "}, 1000);\r\n";
     HTML_Content += "}\r\n";
   HTML_Content += "</script>";
-  //HTML_Content += "<meta http-equiv=\"refresh\" content=\"5\">";
+  HTML_Content += "<meta http-equiv=\"refresh\" content=\"5\">";
   HTML_Content += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\" crossorigin=\"anonymous\">";
   HTML_Content += "<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p\" crossorigin=\"anonymous\"></script>";
   HTML_Content += "<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
@@ -282,12 +283,10 @@ String JAG_webserver::createStationInfo() {
             returnHTML += "<h2>Last Badge: ";
 
             if (my_lastbadge == "") {
-               returnHTML += my_lastbadge;
+              returnHTML += "Never"; 
             } else {
-              returnHTML += "Never";
+              returnHTML += my_lastbadge;
             }
-            
-            
             
             returnHTML += "</h2><br / >";
       returnHTML += "Current Temp: " + my_TEMP + char(176) + " C<br / >";
@@ -350,4 +349,8 @@ void JAG_webserver::addHumidityValueToArray(String value) {
           break;
         }
       }    
+}
+
+void JAG_webserver::updateLocalLastBadged(String cardUsername) {
+  my_lastbadge = cardUsername;
 }

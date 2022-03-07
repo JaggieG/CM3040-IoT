@@ -25,6 +25,7 @@ class JAG_webserver
     void addGasValueToArray(String value);
     void addTempValueToArray(String value);
     void addHumidityValueToArray(String value);
+    void updateLocalLastBadged(String cardUsername);
 
   private:
     int port_;

@@ -31,8 +31,8 @@ unsigned long previousTime = 0;
 
 /* should we log details to the serial port? */
 bool logSerial = true;
-String station_id = "1";
-String station_name = "My Desk Right";
+String station_id = "2";
+String station_name = "My Desk Left";
 
 char* wirelessSSID = "CHALETEMMANUEL";
 char* wirelessKey = "LOCKEDDOWN";
@@ -86,6 +86,7 @@ void loop() {
   if (cardUsername != "") {
     Serial.println("Card Username is: " + cardUsername);
     httpClient.sendCardValueToRemoteStation(cardUsername);
+    webserver.updateLocalLastBadged(cardUsername);
   }
 
   //run the cron job to update the details to the remote station
