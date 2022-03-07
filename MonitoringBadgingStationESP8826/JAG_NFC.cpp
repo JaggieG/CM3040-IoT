@@ -1,5 +1,26 @@
-#include "Arduino.h"
+/*
+ * JAG_NFC.cpp
+ * Implementation file for the NFC Chip 
+ */
+
 #include "JAG_NFC.h"
+
+/*
+ * We required the chips liabry as well as SPI and Arudino library for PIN defintions
+ * 
+ *  RDIS-RC522, pin setup
+ *  
+ *  VCC = 5V or 3.3V depending on model
+ *  RST = D0
+ *  GND = GND
+ *  MISO = D6
+ *  MOSI = D7
+ *  SCK = D5
+ *  SDS = D8
+ *  
+ */
+ 
+#include "Arduino.h"
 #include <SPI.h>
 #include "MFRC522.h"
 
@@ -15,8 +36,8 @@ JAG_NFC::JAG_NFC(bool logSerial) {
   logSerial_ = logSerial;
 }
 
-// Public Functions
 
+//Here we run the setup of the
 void JAG_NFC::setup() {
   SPI.begin(); // Init SPI bus
   rfid.PCD_Init(); // Init MFRC522
