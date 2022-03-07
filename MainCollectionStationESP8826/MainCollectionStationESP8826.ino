@@ -42,6 +42,7 @@ void cronJob() {
   if (currentTime - previousTime >= eventInterval) {
     Serial.println("Sending values to the Remote Station");
     previousTime = currentTime;
+     webserver.printOutGas();
   }
 
   

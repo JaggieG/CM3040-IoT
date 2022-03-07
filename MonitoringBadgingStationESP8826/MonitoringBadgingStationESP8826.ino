@@ -26,7 +26,7 @@ It relies on a
 String remote_server_ip = "192.168.1.139";
 
 /* As we don't want to run certain jobs at every iteration of the loop() function  */
-const unsigned long eventInterval = 30 * 1000; // every thirty seconds
+const unsigned long eventInterval = 5 * 1000; // every thirty seconds
 unsigned long previousTime = 0;
 
 /* should we log details to the serial port? */
@@ -42,7 +42,7 @@ JAG_gas gas_sensor = JAG_gas(A0, 600, logSerial);
 
 /* DHT sensor info */
 #define DHTPIN 4 // what digital pin the DHT22 is conected to
-#define DHTTYPE DHT11 // there are multiple kinds of DHT sensors
+#define DHTTYPE DHT22 // there are multiple kinds of DHT sensors
 
 DHT dht(DHTPIN, DHTTYPE);
 

@@ -175,6 +175,7 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
       remote1_lastbadge = item_value;
     } else if (item_type == "GAS") {
       remote1_GAS = item_value;
+      addGasValueToArray(item_value, item_number);
     }
   } else if (item_number == "2") {
     remote2_name = item_name;
@@ -187,6 +188,7 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
       remote2_lastbadge = item_value;
     } else if (item_type == "GAS") {
       remote2_GAS = item_value;
+     addGasValueToArray(item_value, item_number);
     }
   } else if (item_number == "3") {
     remote3_name = item_name;
@@ -199,6 +201,7 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
       remote3_lastbadge = item_value;
     } else if (item_type == "GAS") {
       remote3_GAS = item_value;
+      addGasValueToArray(item_value, item_number);
     }
   } else {
 
@@ -218,11 +221,14 @@ String JAG_webserver::createStationInfo(String stationNumber) {
       returnHTML += "Humidity: " + remote1_humidity + " %<br / >";
       returnHTML += "Last Badge: " + remote1_lastbadge + "<br / >";
       returnHTML += "Gas: " + remote1_GAS + " ppm<br / >";
+      returnHTML += "<canvas id=\"gas_1_chart\" width=\"400\" height=\"400\"></canvas>";
       returnHTML += "</p>";
      returnHTML += "<a href=\"http://" + IpAddress2String(webserver.client().remoteIP()) + "\" class=\"card-link\">Station Web Interface</a>";
       returnHTML += "<br />";
      returnHTML += "Updated " + showNiceLastConnect(remote1_lastconnect);
       returnHTML += "</div>";
+
+    
       returnHTML += "</div>";
     }
   } else if (stationNumber == "2") {
@@ -236,6 +242,7 @@ String JAG_webserver::createStationInfo(String stationNumber) {
         returnHTML += "Humidity: " + remote2_humidity + "<br / >";
         returnHTML += "Gas: " + remote2_GAS + " ppm<br / >";
         returnHTML += "Last Badge: " + remote2_lastbadge + "<br / >";
+        returnHTML += "<canvas id=\"gas_2_chart\" width=\"400\" height=\"400\"></canvas>";
         returnHTML += "</p>";
        returnHTML += "<a href=\"http://" + IpAddress2String(webserver.client().remoteIP()) + "\" class=\"card-link\">Station Web Interface</a>";
         returnHTML += "<br />";
@@ -254,6 +261,7 @@ String JAG_webserver::createStationInfo(String stationNumber) {
         returnHTML += "Humidity: " + remote3_humidity + "<br / >";
         returnHTML += "Gas: " + remote3_GAS + " ppm<br / >";
         returnHTML += "Last Badge: " + remote3_lastbadge + "<br / >";
+        returnHTML += "<canvas id=\"gas_3_chart\" width=\"400\" height=\"400\"></canvas>";
         returnHTML += "</p>";
          returnHTML += "<a href=\"http://" + IpAddress2String(webserver.client().remoteIP()) + "\" class=\"card-link\">Station Web Interface</a>";
           returnHTML += "<br />";
@@ -323,6 +331,7 @@ String JAG_webserver::IpAddress2String(const IPAddress& ipAddress)
 }
 
 
+
 String JAG_webserver::showNiceLastConnect(unsigned long last_connect) {
   String returnHTML = "";
   unsigned long difference  = millis() - last_connect;
@@ -334,24 +343,42 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
   String HTML_Content = "<html>";
   HTML_Content += "<head>";
 
-  HTML_Content += "<script>";
+  HTML_Content += "<script>\r\n";
+  
     HTML_Content += "function refreshPage() {\r\n";
     HTML_Content += "   location.reload()\r\n";
     HTML_Content += "}\r\n";
+    
     HTML_Content += "\r\n";
-    HTML_Content += " function onPageLoad() {\r\n";
+    
+    HTML_Content += "function onPageLoad() {\r\n";
+
+    //gas one chart info
+    HTML_Content += " const ctx = document.getElementById('gas_1_chart');\r\n";
+    HTML_Content += " const chart = new Chart(ctx, {\r\n";
+        HTML_Content += "   type: 'line',\r\n";
+        HTML_Content += "   data: GAS_1_data,\r\n";
+        HTML_Content += " });\r\n";
+
+        HTML_Content += "\r\n";
+        
     HTML_Content += "setInterval(function () {\r\n";
 
-        HTML_Content +=" var current_sec_div = document.getElementById('up_time')\r\n ";
-        HTML_Content +="var current_sec = parseInt(current_sec_div.innerHTML)\r\n ";
-        HTML_Content +="current_sec_div.innerHTML = current_sec + 1\r\n ";
+        HTML_Content +="    var current_sec_div = document.getElementById('up_time')\r\n ";
+        HTML_Content +="    var current_sec = parseInt(current_sec_div.innerHTML)\r\n ";
+        HTML_Content +="    current_sec_div.innerHTML = current_sec + 1\r\n ";
     
     HTML_Content += "}, 1000);\r\n";
     HTML_Content += "}\r\n";
   HTML_Content += "</script>";
-  HTML_Content += "<meta http-equiv=\"refresh\" content=\"5\">";
+  //HTML_Content += "<meta http-equiv=\"refresh\" content=\"5\">";
   HTML_Content += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3\" crossorigin=\"anonymous\">";
   HTML_Content += "<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p\" crossorigin=\"anonymous\"></script>";
+  HTML_Content += "<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
+  HTML_Content += "<script>\r\n";
+    HTML_Content += createJSDataForGAS("1");
+  HTML_Content += "</script>";
+  
   HTML_Content += "</head>";
   HTML_Content += "<body onload=\"onPageLoad()\" style=\"padding:10px\">";
   HTML_Content += theContent;
@@ -359,4 +386,103 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
 
   HTML_Content += "</html>";
   return HTML_Content;
+
 }
+
+String JAG_webserver::createJSDataForGAS(String stationId) {
+  String returnJS = "";
+  if (stationId == "1") {
+
+      returnJS += "const GAS_1_data = {\r\n";
+        returnJS += " labels: [\r\n";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote1_GAS_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          returnJS = returnJS.substring(0,returnJS.length() -1);
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'Gas Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote1_GAS_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          returnJS = returnJS.substring(0,returnJS.length() -1);
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  } else if (stationId == "2") {
+    returnJS += "var 2_GAS=[";
+
+
+    for (int i=0; i < 99; i++) {
+        String this_value =  remote2_GAS_history[i];
+        if (this_value != "") {
+          returnJS += "\"" + this_value + "\",";
+        }
+        
+      }
+
+      
+  } else if (stationId == "3") {
+    returnJS += "var 3_GAS=[";
+
+    for (int i=0; i < 99; i++) {
+        String this_value =  remote3_GAS_history[i];
+        if (this_value != "") {
+          returnJS += "\"" + this_value + "\",";
+        }
+        
+      }
+  }
+ 
+       return returnJS;
+}
+
+void JAG_webserver::addGasValueToArray(String value, String stationId) {
+  if (stationId == "1") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote1_GAS_history[i];
+        if (this_value == "") {
+          remote1_GAS_history[i] = value;
+          break;
+        }
+      }    
+  } else if (stationId == "2") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote2_GAS_history[i];
+        if (this_value == "") {
+          remote1_GAS_history[i] = value;
+          break;
+        }
+      }    
+  } else if (stationId == "3") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote3_GAS_history[i];
+        if (this_value == "") {
+          remote1_GAS_history[i] = value;
+          break;
+        }
+      }    
+  }
+}
+void JAG_webserver::printOutGas() {
+  Serial.println("Prinitng GAS:");
+   for (int i=0; i < 99; i++) {
+        String this_value =  remote1_GAS_history[i];
+        if (this_value != "") {
+          Serial.println(String(i) + " : " + this_value);
+        }
+        
+      }
+  }
