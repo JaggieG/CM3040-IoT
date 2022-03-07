@@ -31,13 +31,18 @@ unsigned long previousTime = 0;
 
 /* should we log details to the serial port? */
 bool logSerial = true;
+String station_id = "1";
+String station_name = "My Desk Right";
+
+char* wirelessSSID = "CHALETEMMANUEL";
+char* wirelessKey = "LOCKEDDOWN";
+int http_server_port = 80;
 
 // create the required objects using my libraries
-
-JAG_wificlient wifi_client = JAG_wificlient("CHALETEMMANUEL", "LOCKEDDOWN", logSerial);
-JAG_webserver webserver = JAG_webserver(80, logSerial);
+JAG_wificlient wifi_client = JAG_wificlient(wirelessSSID, wirelessKey, logSerial);
+JAG_webserver webserver = JAG_webserver(http_server_port, station_name, logSerial);
 JAG_NFC NFC_reader = JAG_NFC(logSerial);
-JAG_httpclient httpClient = JAG_httpclient(remote_server_ip, logSerial);
+JAG_httpclient httpClient = JAG_httpclient(remote_server_ip, logSerial, station_id, station_name);
 JAG_gas gas_sensor = JAG_gas(A0, 600, logSerial);
 
 /* DHT sensor info */
@@ -45,7 +50,6 @@ JAG_gas gas_sensor = JAG_gas(A0, 600, logSerial);
 #define DHTTYPE DHT22 // there are multiple kinds of DHT sensors
 
 DHT dht(DHTPIN, DHTTYPE);
-
 
 /* Main IoT Setup */
 void setup() {
@@ -101,11 +105,15 @@ void cronJob() {
     if (isnan(h) || isnan(t)) {
       Serial.println("Failed to read from DHT sensor!");
     } else {
+      webserver.addTempValueToArray(String(t));
+      webserver.addHumidityValueToArray(String(h));
+      
       httpClient.sendAllValues(String(t), String(h));
     }
 
     int gas_sensor_reading = gas_sensor.getGasValue();
     if (gas_sensor_reading > 0) {
+        webserver.addGasValueToArray(String(gas_sensor_reading));
       httpClient.sendGasSensorValueToRemoteStation(String(gas_sensor_reading));
     }
 

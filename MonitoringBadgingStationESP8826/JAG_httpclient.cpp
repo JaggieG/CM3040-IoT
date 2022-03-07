@@ -5,13 +5,13 @@
 
 // initialise
 
-JAG_httpclient::JAG_httpclient(String remoteStationIP,bool logSerial)
+JAG_httpclient::JAG_httpclient(String remoteStationIP, bool logSerial, String localIdent, String localSationName)
 {
   HTTPClient http;  //Declare an object of class HTTPClient
   logSerial_ = logSerial;
   remoteStationIP_ = remoteStationIP;
-  localIdent_ = "2";
-  localStationName_ = "My Desk Left";
+  localIdent_ = localIdent;
+  localStationName_ = localSationName;
   WiFiClient wifiClient;
 
 }
@@ -52,6 +52,7 @@ void JAG_httpclient::sendLocalTemperatureValuesToRemoteStation(String Temperatur
 }
 
 void JAG_httpclient::sendLocalHumidityValuesToRemoteStation(String Humidity) {
+  
     String remote_server_address = "http://"  + remoteStationIP_ + "/update";
     StaticJsonDocument<200> doc;
       doc["station_id"] = localIdent_;

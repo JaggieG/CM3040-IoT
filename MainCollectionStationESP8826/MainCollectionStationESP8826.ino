@@ -80,7 +80,6 @@ void cronJob() {
       httpClient.sendAllValues(String(t), String(h));
     }
 
-    
     previousTime = currentTime;
   }
 }
