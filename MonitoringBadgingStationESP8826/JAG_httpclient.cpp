@@ -10,8 +10,8 @@ JAG_httpclient::JAG_httpclient(String remoteStationIP,bool logSerial)
   HTTPClient http;  //Declare an object of class HTTPClient
   logSerial_ = logSerial;
   remoteStationIP_ = remoteStationIP;
-  localIdent_ = "1";
-  localStationName_ = "My Desk Right";
+  localIdent_ = "2";
+  localStationName_ = "My Desk Left";
   WiFiClient wifiClient;
 
 }

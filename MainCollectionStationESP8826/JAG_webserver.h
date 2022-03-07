@@ -37,35 +37,48 @@ class JAG_webserver
     String IpAddress2String(const IPAddress& ipAddress);
 
     void addGasValueToArray(String value, String stationId);
+    void addTempValueToArray(String value, String stationId);
+    void addHumidityValueToArray(String value, String stationId);
     
     String remote1_temp;
+    String remote1_TEMP_history[100];
     String remote1_humidity;
+    String remote1_HUMIDITY_history[100];
     String remote1_GAS;
     String remote1_GAS_history[100];
     String remote1_name;
     String remote1_lastbadge;
+    bool remote1_showing;
     unsigned long remote1_lastconnect;
 
     String remote2_temp;
+    String remote2_TEMP_history[100];
     String remote2_humidity;
+    String remote2_HUMIDITY_history[100];
     String remote2_GAS;
     String remote2_GAS_history[100];
     String remote2_name;
     String remote2_lastbadge;
+    bool remote2_showing;
     unsigned long remote2_lastconnect;
 
     String remote3_temp;
+    String remote3_TEMP_history[100];
     String remote3_humidity;
+    String remote3_HUMIDITY_history[100];
     String remote3_GAS;
+    String remote3_GAS_history[100];
     String remote3_name;
     String remote3_lastbadge;
-    String remote3_GAS_history[100];
+    bool remote3_showing;
     unsigned long remote3_lastconnect;
 
     String badgingUser[99];
     unsigned long pageLastUpdate;
 
     String createJSDataForGAS(String stationId);
+    String createJSDataForTEMP(String stationId);
+    String createJSDataForHUMIDITY(String stationId);
 };
 
 #endif

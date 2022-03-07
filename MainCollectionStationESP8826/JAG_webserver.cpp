@@ -7,6 +7,9 @@
 JAG_webserver::JAG_webserver(int port, bool logSerial) {
   port_ = port;
   logSerial_ = logSerial;
+  remote1_showing = false;
+  remote2_showing = false;
+  remote3_showing = false;
   ESP8266WebServer webserver_(port_);
 }
 
@@ -169,8 +172,10 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
     remote1_lastconnect = millis();
     if (item_type == "TEMP") {
       remote1_temp = item_value;
+      addTempValueToArray(item_value, item_number);
     } else if (item_type == "HUMIDITY") {
       remote1_humidity = item_value;
+      addHumidityValueToArray(item_value, item_number);
     } else if (item_type == "BADGE") {
       remote1_lastbadge = item_value;
     } else if (item_type == "GAS") {
@@ -182,8 +187,10 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
     remote2_lastconnect = millis();
     if (item_type == "TEMP") {
       remote2_temp = item_value;
+      addTempValueToArray(item_value, item_number);
     } else if (item_type == "HUMIDITY") {
       remote2_humidity = item_value;
+      addHumidityValueToArray(item_value, item_number);
     } else if (item_type == "BADGE") {
       remote2_lastbadge = item_value;
     } else if (item_type == "GAS") {
@@ -195,8 +202,10 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
     remote3_lastconnect = millis();
     if (item_type == "TEMP") {
       remote3_temp = item_value;
+      addTempValueToArray(item_value, item_number);
     } else if (item_type == "HUMIDITY") {
       remote3_humidity = item_value;
+      addHumidityValueToArray(item_value, item_number);
     } else if (item_type == "BADGE") {
       remote3_lastbadge = item_value;
     } else if (item_type == "GAS") {
@@ -211,17 +220,21 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
 String JAG_webserver::createStationInfo(String stationNumber) {
   String returnHTML = "";
   if (stationNumber == "1") {
+    remote1_showing = false;
     if (remote1_name != "") {
-      returnHTML += "<div class=\"card\" style=\"width: 18rem;\">";
+      remote1_showing = true;
+      returnHTML += "<div class=\"card\" style=\"width: 100%;\">";
       returnHTML += "<div class=\"card-body\">";
       returnHTML += "<h5 class=\"card-title\">" + remote1_name + "</h5>";
       returnHTML += "<h6 class=\"card-subtitle mb-2 text-muted\"></h6>";
       returnHTML += "<p class=\"card-text\">";
-      returnHTML += "Temp: " + remote1_temp + " centigrade<br / >";
-      returnHTML += "Humidity: " + remote1_humidity + " %<br / >";
+      returnHTML += "Current Temp: " + remote1_temp + char(176) + " C<br / >";
+      returnHTML += "<div><canvas id=\"temp_1_chart\" width=\"600\" height=\"400\"></canvas></div>";
+      returnHTML += "Current Humidity: " + remote1_humidity + " %<br / >";
+      returnHTML += "<div><canvas id=\"humidity_1_chart\" width=\"600\" height=\"400\"></canvas></div>";
+      returnHTML += "Current Gas: " + remote1_GAS + " ppm<br / >";
+      returnHTML += "<div><canvas id=\"gas_1_chart\" width=\"600\" height=\"400\"></canvas></div>";
       returnHTML += "Last Badge: " + remote1_lastbadge + "<br / >";
-      returnHTML += "Gas: " + remote1_GAS + " ppm<br / >";
-      returnHTML += "<canvas id=\"gas_1_chart\" width=\"400\" height=\"400\"></canvas>";
       returnHTML += "</p>";
      returnHTML += "<a href=\"http://" + IpAddress2String(webserver.client().remoteIP()) + "\" class=\"card-link\">Station Web Interface</a>";
       returnHTML += "<br />";
@@ -232,17 +245,22 @@ String JAG_webserver::createStationInfo(String stationNumber) {
       returnHTML += "</div>";
     }
   } else if (stationNumber == "2") {
+    remote2_showing = false;
      if (remote2_name != "") {
-        returnHTML += "<div class=\"card\" style=\"width: 18rem;\">";
+      remote2_showing = true;
+        returnHTML += "<div class=\"card\" style=\"width: 100%;\">";
         returnHTML += "<div class=\"card-body\">";
         returnHTML += "<h5 class=\"card-title\">" + remote2_name + "</h5>";
         returnHTML += "<h6 class=\"card-subtitle mb-2 text-muted\"></h6>";
         returnHTML += "<p class=\"card-text\">";
-        returnHTML += "Temp: " + remote2_temp + " centigrade <br / >";
-        returnHTML += "Humidity: " + remote2_humidity + "<br / >";
-        returnHTML += "Gas: " + remote2_GAS + " ppm<br / >";
+        returnHTML += "Current Temp: " + remote2_temp + char(176) + " C<br / >";
+         returnHTML += "<div><canvas id=\"temp_2_chart\" width=\"600\" height=\"400\"></canvas></div>";
+        returnHTML += "Curent Humidity: " + remote2_humidity + "<br / >";
+        returnHTML += "<div><canvas id=\"humidity_2_chart\" width=\"600\" height=\"400\"></canvas></div>";
+        returnHTML += "Current Gas: " + remote2_GAS + " ppm<br / >";
+         returnHTML += "<div><canvas id=\"gas_2_chart\" width=\"600\" height=\"400\"></canvas></div>";
         returnHTML += "Last Badge: " + remote2_lastbadge + "<br / >";
-        returnHTML += "<canvas id=\"gas_2_chart\" width=\"400\" height=\"400\"></canvas>";
+     
         returnHTML += "</p>";
        returnHTML += "<a href=\"http://" + IpAddress2String(webserver.client().remoteIP()) + "\" class=\"card-link\">Station Web Interface</a>";
         returnHTML += "<br />";
@@ -251,17 +269,22 @@ String JAG_webserver::createStationInfo(String stationNumber) {
         returnHTML += "</div>";
      }
   } else if (stationNumber == "3") {
+    remote3_showing = false;
      if (remote3_name != "") {
-        returnHTML += "<div class=\"card\" style=\"width: 18rem;\">";
+      remote3_showing = true;
+        returnHTML += "<div class=\"card\" style=\"width: 100%;\">";
         returnHTML += "<div class=\"card-body\">";
         returnHTML += "<h5 class=\"card-title\">" + remote3_name + "</h5>";
         returnHTML += "<h6 class=\"card-subtitle mb-2 text-muted\"></h6>";
         returnHTML += "<p class=\"card-text\">";
-        returnHTML += "Temp: " + remote3_temp + " centigrade<br / >";
-        returnHTML += "Humidity: " + remote3_humidity + "<br / >";
-        returnHTML += "Gas: " + remote3_GAS + " ppm<br / >";
+        returnHTML += "Current Temp: " + remote3_temp + char(176) + " C<br / >";
+          returnHTML += "<div><canvas id=\"temp_3_chart\" width=\"600\" height=\"400\"></canvas></div>";
+        returnHTML += "Current Humidity: " + remote3_humidity + "<br / >";
+           returnHTML += "<div><canvas id=\"humidity_3_chart\" width=\"600\" height=\"400\"></canvas></div>";
+        returnHTML += "Current Gas: " + remote3_GAS + " ppm<br / >";
+        returnHTML += "<div><canvas id=\"gas_3_chart\" width=\"600\" height=\"400\"></canvas></div>";
         returnHTML += "Last Badge: " + remote3_lastbadge + "<br / >";
-        returnHTML += "<canvas id=\"gas_3_chart\" width=\"400\" height=\"400\"></canvas>";
+     
         returnHTML += "</p>";
          returnHTML += "<a href=\"http://" + IpAddress2String(webserver.client().remoteIP()) + "\" class=\"card-link\">Station Web Interface</a>";
           returnHTML += "<br />";
@@ -353,14 +376,114 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
     
     HTML_Content += "function onPageLoad() {\r\n";
 
-    //gas one chart info
-    HTML_Content += " const ctx = document.getElementById('gas_1_chart');\r\n";
-    HTML_Content += " const chart = new Chart(ctx, {\r\n";
+    //gas 1 chart info
+    if (remote1_showing) {
+      HTML_Content += " const ctx_gas_1_chart = document.getElementById('gas_1_chart');\r\n";
+        HTML_Content += " const chart_gas_1_chart = new Chart(ctx_gas_1_chart, {\r\n";
         HTML_Content += "   type: 'line',\r\n";
         HTML_Content += "   data: GAS_1_data,\r\n";
         HTML_Content += " });\r\n";
 
         HTML_Content += "\r\n";
+    }
+    
+
+    //gas 2 chart info
+     if (remote2_showing) {
+      HTML_Content += " const ctx_gas_2_chart = document.getElementById('gas_2_chart');\r\n";
+      HTML_Content += " const chart_gas_2_chart = new Chart(ctx_gas_2_chart, {\r\n";
+          HTML_Content += "   type: 'line',\r\n";
+          HTML_Content += "   data: GAS_2_data,\r\n";
+          HTML_Content += " });\r\n";
+  
+          HTML_Content += "\r\n";
+     }
+
+    //gas 3 chart info
+     if (remote3_showing) {
+        HTML_Content += " const ctx_gas_3_chart = document.getElementById('gas_3_chart');\r\n";
+        HTML_Content += " const chart_gas_3_chart = new Chart(ctx_gas_3_chart, {\r\n";
+            HTML_Content += "   type: 'line',\r\n";
+            HTML_Content += "   data: GAS_3_data,\r\n";
+            HTML_Content += " });\r\n";
+    
+            HTML_Content += "\r\n";
+
+     }
+
+
+          //temp 1 chart info
+
+           if (remote1_showing) {
+              HTML_Content += " const ctx_temp_1_chart = document.getElementById('temp_1_chart');\r\n";
+              HTML_Content += " const chart_temp_1_chart = new Chart(ctx_temp_1_chart, {\r\n";
+                  HTML_Content += "   type: 'line',\r\n";
+                  HTML_Content += "   data: TEMP_1_data,\r\n";
+                  HTML_Content += " });\r\n";
+          
+                  HTML_Content += "\r\n";
+
+           }
+
+    //temp 2 chart info
+     if (remote2_showing) {
+        HTML_Content += " const ctx_temp_2_chart = document.getElementById('temp_2_chart');\r\n";
+        HTML_Content += " const chart_temp_2_chart = new Chart(ctx_temp_2_chart, {\r\n";
+            HTML_Content += "   type: 'line',\r\n";
+            HTML_Content += "   data: TEMP_2_data,\r\n";
+            HTML_Content += " });\r\n";
+    
+            HTML_Content += "\r\n";
+     }
+
+    //temp 3 chart info
+     if (remote3_showing) {
+        HTML_Content += " const ctx_temp_3_chart = document.getElementById('temp_3_chart');\r\n";
+        HTML_Content += " const chart_temp_3_chart = new Chart(ctx_temp_3_chart, {\r\n";
+            HTML_Content += "   type: 'line',\r\n";
+            HTML_Content += "   data: TEMP_3_data,\r\n";
+            HTML_Content += " });\r\n";
+    
+            HTML_Content += "\r\n";
+
+     }
+
+
+
+          //humidity 1 chart info
+           if (remote1_showing) {
+              HTML_Content += " const ctx_humidity_1_chart = document.getElementById('humidity_1_chart');\r\n";
+              HTML_Content += " const chart_humidity_1_chart = new Chart(ctx_humidity_1_chart, {\r\n";
+                  HTML_Content += "   type: 'line',\r\n";
+                  HTML_Content += "   data: HUMIDITY_1_data,\r\n";
+                  HTML_Content += " });\r\n";
+          
+                  HTML_Content += "\r\n";
+
+           }
+
+    //humidity 2 chart info
+     if (remote2_showing) {
+        HTML_Content += " const ctx_humidity_2_chart = document.getElementById('humidity_2_chart');\r\n";
+        HTML_Content += " const chart_humidity_2_chart = new Chart(ctx_humidity_2_chart, {\r\n";
+            HTML_Content += "   type: 'line',\r\n";
+            HTML_Content += "   data: HUMIDITY_2_data,\r\n";
+            HTML_Content += " });\r\n";
+    
+            HTML_Content += "\r\n";
+     }
+    //humidity 3 chart info
+     if (remote3_showing) {
+          HTML_Content += " const ctx_humidity_3_chart = document.getElementById('humidity_3_chart');\r\n";
+          HTML_Content += " const chart_humidity_3_chart = new Chart(ctx_humidity_3_chart, {\r\n";
+              HTML_Content += "   type: 'line',\r\n";
+              HTML_Content += "   data: HUMIDITY_3_data,\r\n";
+              HTML_Content += " });\r\n";
+      
+              HTML_Content += "\r\n";
+
+     }
+        
         
     HTML_Content += "setInterval(function () {\r\n";
 
@@ -377,6 +500,27 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
   HTML_Content += "<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
   HTML_Content += "<script>\r\n";
     HTML_Content += createJSDataForGAS("1");
+       HTML_Content += "\r\n";
+    HTML_Content += createJSDataForGAS("2");
+       HTML_Content += "\r\n";
+    HTML_Content += createJSDataForGAS("3");
+      HTML_Content += "\r\n";
+   
+
+      HTML_Content += createJSDataForTEMP("1");
+       HTML_Content += "\r\n";
+    HTML_Content += createJSDataForTEMP("2");
+       HTML_Content += "\r\n";
+    HTML_Content += createJSDataForTEMP("3");
+      HTML_Content += "\r\n";
+
+
+       HTML_Content += createJSDataForHUMIDITY("1");
+       HTML_Content += "\r\n";
+    HTML_Content += createJSDataForHUMIDITY("2");
+       HTML_Content += "\r\n";
+    HTML_Content += createJSDataForHUMIDITY("3");
+      HTML_Content += "\r\n";
   HTML_Content += "</script>";
   
   HTML_Content += "</head>";
@@ -392,16 +536,15 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
 String JAG_webserver::createJSDataForGAS(String stationId) {
   String returnJS = "";
   if (stationId == "1") {
-
       returnJS += "const GAS_1_data = {\r\n";
-        returnJS += " labels: [\r\n";
+        returnJS += " labels: [";
          for (int i=0; i < 99; i++) {
             String this_value =  remote1_GAS_history[i];
             if (this_value != "") {
               returnJS += String(i) + ",";
             }
           }
-          returnJS = returnJS.substring(0,returnJS.length() -1);
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
           returnJS += "],\r\n";
           
         returnJS += " datasets: [{\r\n";
@@ -413,7 +556,7 @@ String JAG_webserver::createJSDataForGAS(String stationId) {
               returnJS += this_value + ",";
             }
           }
-          returnJS = returnJS.substring(0,returnJS.length() -1);
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
           returnJS += "],\r\n";
           returnJS += "   fill: true,\r\n";
           returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
@@ -422,32 +565,164 @@ String JAG_webserver::createJSDataForGAS(String stationId) {
         returnJS += "}]\r\n";
       returnJS += "};\r\n";
   } else if (stationId == "2") {
-    returnJS += "var 2_GAS=[";
-
-
-    for (int i=0; i < 99; i++) {
-        String this_value =  remote2_GAS_history[i];
-        if (this_value != "") {
-          returnJS += "\"" + this_value + "\",";
-        }
-        
-      }
-
-      
+     returnJS += "const GAS_2_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote2_GAS_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'Gas Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote2_GAS_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
   } else if (stationId == "3") {
-    returnJS += "var 3_GAS=[";
-
-    for (int i=0; i < 99; i++) {
-        String this_value =  remote3_GAS_history[i];
-        if (this_value != "") {
-          returnJS += "\"" + this_value + "\",";
-        }
-        
-      }
+    returnJS += "const GAS_3_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote3_GAS_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'Gas Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote3_GAS_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
   }
  
        return returnJS;
 }
+
+
+String JAG_webserver::createJSDataForTEMP(String stationId) {
+  String returnJS = "";
+  if (stationId == "1") {
+      returnJS += "const TEMP_1_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote1_TEMP_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'TEMP Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote1_TEMP_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  } else if (stationId == "2") {
+     returnJS += "const TEMP_2_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote2_TEMP_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'TEMP Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote2_TEMP_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  } else if (stationId == "3") {
+    returnJS += "const TEMP_3_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote3_TEMP_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'TEMP Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote3_TEMP_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  }
+ 
+       return returnJS;
+}
+
+
 
 void JAG_webserver::addGasValueToArray(String value, String stationId) {
   if (stationId == "1") {
@@ -462,7 +737,7 @@ void JAG_webserver::addGasValueToArray(String value, String stationId) {
       for (int i=0; i < 99; i++) {
         String this_value =  remote2_GAS_history[i];
         if (this_value == "") {
-          remote1_GAS_history[i] = value;
+          remote2_GAS_history[i] = value;
           break;
         }
       }    
@@ -470,16 +745,168 @@ void JAG_webserver::addGasValueToArray(String value, String stationId) {
       for (int i=0; i < 99; i++) {
         String this_value =  remote3_GAS_history[i];
         if (this_value == "") {
-          remote1_GAS_history[i] = value;
+          remote3_GAS_history[i] = value;
           break;
         }
       }    
   }
 }
+
+void JAG_webserver::addTempValueToArray(String value, String stationId) {
+   if (stationId == "1") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote1_TEMP_history[i];
+        if (this_value == "") {
+          remote1_TEMP_history[i] = value;
+          break;
+        }
+      }    
+  } else if (stationId == "2") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote2_TEMP_history[i];
+        if (this_value == "") {
+          remote2_TEMP_history[i] = value;
+          break;
+        }
+      }    
+  } else if (stationId == "3") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote3_TEMP_history[i];
+        if (this_value == "") {
+          remote3_TEMP_history[i] = value;
+          break;
+        }
+      }    
+  }
+}
+
+void JAG_webserver::addHumidityValueToArray(String value, String stationId) {
+   if (stationId == "1") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote1_HUMIDITY_history[i];
+        if (this_value == "") {
+          remote1_HUMIDITY_history[i] = value;
+          break;
+        }
+      }    
+  } else if (stationId == "2") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote2_HUMIDITY_history[i];
+        if (this_value == "") {
+          remote2_HUMIDITY_history[i] = value;
+          break;
+        }
+      }    
+  } else if (stationId == "3") {
+      for (int i=0; i < 99; i++) {
+        String this_value =  remote3_HUMIDITY_history[i];
+        if (this_value == "") {
+          remote3_HUMIDITY_history[i] = value;
+          break;
+        }
+      }    
+  }
+}
+
+
+String JAG_webserver::createJSDataForHUMIDITY(String stationId) {
+  String returnJS = "";
+  if (stationId == "1") {
+      returnJS += "const HUMIDITY_1_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote1_HUMIDITY_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'HUMIDITY Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote1_HUMIDITY_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  } else if (stationId == "2") {
+     returnJS += "const HUMIDITY_2_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote2_HUMIDITY_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);// 
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'HUMIDITY Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote2_HUMIDITY_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  } else if (stationId == "3") {
+    returnJS += "const HUMIDITY_3_data = {\r\n";
+        returnJS += " labels: [";
+         for (int i=0; i < 99; i++) {
+            String this_value =  remote3_HUMIDITY_history[i];
+            if (this_value != "") {
+              returnJS += String(i) + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);
+          returnJS += "],\r\n";
+          
+        returnJS += " datasets: [{\r\n";
+          returnJS += "   label: 'HUMIDITY Graph',\r\n";
+          returnJS += "   data: [";
+          for (int i=0; i < 99; i++) {
+            String this_value =  remote3_HUMIDITY_history[i];
+            if (this_value != "") {
+              returnJS += this_value + ",";
+            }
+          }
+          // returnJS = returnJS.substring(0,returnJS.length() -1);
+          returnJS += "],\r\n";
+          returnJS += "   fill: true,\r\n";
+          returnJS += "   borderColor: 'rgb(75, 192, 192)',\r\n";
+          returnJS += "   tension: 0.1,\r\n";
+          returnJS += "   showLine: true\r\n";
+        returnJS += "}]\r\n";
+      returnJS += "};\r\n";
+  }
+ 
+       return returnJS;
+}
+
 void JAG_webserver::printOutGas() {
   Serial.println("Prinitng GAS:");
    for (int i=0; i < 99; i++) {
-        String this_value =  remote1_GAS_history[i];
+        String this_value =  remote2_GAS_history[i];
         if (this_value != "") {
           Serial.println(String(i) + " : " + this_value);
         }

@@ -10,11 +10,12 @@
 class JAG_httpclient
 {
   public:
-    JAG_httpclient(bool logSerial, String remoteStationIP);
+    JAG_httpclient(String remoteStationIP,bool logSerial);
     HTTPClient http;  //Declare an object of class HTTPClient
     void sendAllValues(String Temperature, String Humidity);
     void sendLocalTemperatureValuesToRemoteStation(String temperature);
     void sendLocalHumidityValuesToRemoteStation(String Humidity);
+    void sendGasSensorValueToRemoteStation(String gasValue);
     void sendCardValueToRemoteStation(String username);
     void sendLastUpdateCardValueToRemoteStation(String username);
     void sendAggregateCardValueToRemoteStation(String username);
