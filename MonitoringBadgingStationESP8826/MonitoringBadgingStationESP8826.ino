@@ -22,12 +22,18 @@
  *  RDIS-RC522, pin setup
  *  
  *  VCC = 5V or 3.3V depending on model
- *  RST = D0
- *  GND = GND
- *  MISO = D6
- *  MOSI = D7
- *  SCK = D5
- *  SDS = D8
+ * 
++-------------+-------------+------------+
+| ESP8826 PIN | Sensor Name | Sensor PIN |
++-------------+-------------+------------+
+| A0          | Gas         | Out        |
+| D0          | RFID        | RST        |
+| D2          | DHT         | Out        |
+| D5          | RFID        | SCK        |
+| D6          | RFID        | MISO       |
+| D7          | RFID        | MOSI       |
+| D8          | RFID        | NSS        |
++-------------+-------------+------------+
  *  
  */
 

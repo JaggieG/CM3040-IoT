@@ -1,3 +1,8 @@
+/*
+ *  JAG_wificlient = library to handle connecting to a WiFi network
+ * 
+ */
+ 
 #include "Arduino.h"
 #include "JAG_wificlient.h"
 
@@ -12,6 +17,10 @@ JAG_wificlient::JAG_wificlient(char* SSID, char* key, bool logSerial)
 
 // Public Functions
 
+/*
+ * This funciton is called early on in the setup in roder to get the controller connected to the WiFi network
+ * 
+ */
 void JAG_wificlient::connectToWireless() {
  // We start by connecting to a WiFi network
   if (logSerial_) {

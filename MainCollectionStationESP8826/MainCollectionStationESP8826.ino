@@ -1,4 +1,4 @@
-/* ALWAYS RUNNING SERVER */
+ 
 /* Import the required modules */
 #include "JAG_wificlient.h"
 #include "JAG_webserver.h"
@@ -10,6 +10,15 @@
 
   Please change the IP address of the Dashboard collector here.
   this is where the data is sent
+
+  Task 3 evaluation explains how this could be a DNS name in the future
+
+ +-------------+-------------+------------+
+| ESP8826 PIN | Sensor Name | Sensor PIN |
++-------------+-------------+------------+
+| D2          | DHT         | Out        |
+| A0          | Gas         | Out        |
++-------------+-------------+------------+
 
 */
 String remote_server_ip = "127.0.0.1"; // loopback for local connection
@@ -25,7 +34,7 @@ bool logSerial = true;
 
 // create the requried objects using my libraries
 
-JAG_wificlient wifi_client = JAG_wificlient("CHALETEMMANUEL","LOCKEDDOWN", logSerial);
+JAG_wificlient wifi_client = JAG_wificlient("SOMESSID","SOMPASS", logSerial);
 JAG_webserver webserver = JAG_webserver(80, logSerial);
 JAG_httpclient httpClient = JAG_httpclient(remote_server_ip, logSerial);
 
@@ -44,7 +53,7 @@ void setup() {
   // setup WIFi
   wifi_client.connectToWireless();
   
-   // Strat using the DT sensor
+   // Start using the DT sensor
   dht.begin();
 
   
@@ -63,7 +72,13 @@ void loop() {
   cronJob();
 }
 
+/*   
+ *  The cron job runs on every loop() but the if statement is only executed every x seconds (defined at the top of this file)
+ *
+*/
+
 void cronJob() {
+  //make sure we know when now is 
   unsigned long currentTime = millis();
 
   if (currentTime - previousTime >= eventInterval) {

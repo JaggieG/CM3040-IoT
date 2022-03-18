@@ -1,3 +1,8 @@
+/*
+ *  JAG_webserver = library to handle the ESP 8826 web server
+ * 
+ */
+
 #include "Arduino.h"
 #include <ArduinoJson.h>
 
@@ -15,6 +20,10 @@ JAG_webserver::JAG_webserver(int port, bool logSerial) {
 
 // Public Functions
 
+/*
+ * This sets upt he web server and make sure the serial console show a message when complete
+ * 
+ */
 void JAG_webserver::setup() {
   setupRoutes();
   webserver.begin();
@@ -24,9 +33,15 @@ void JAG_webserver::setup() {
   }
 }
 
+// we always need to know when a client has connected.
+
 void JAG_webserver::runServerInLoop() {
   webserver.handleClient();
 }
+
+
+
+/* PAGE NOT FOUND */
 
 String JAG_webserver::get404PageContents() {
   String message = "Resource Not Found<br />";
@@ -160,6 +175,11 @@ void JAG_webserver::setupRoutes() {
   });
 }
 
+/*
+ * Process a JSON string that we have recieved from the remote monitoring station
+ * 
+ * 
+ * */
 void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
 
   String item_number = doc["station_id"];
@@ -217,6 +237,11 @@ void JAG_webserver::processReceivedStrings(DynamicJsonDocument doc) {
   }
 }
 
+/*
+ * Create the HTML to shows the sensor values on the page
+ * 
+ * 
+ * */
 String JAG_webserver::createStationInfo(String stationNumber) {
   String returnHTML = "";
   if (stationNumber == "1") {
@@ -300,6 +325,12 @@ return returnHTML;
   
 }
 
+
+/*
+ * 
+ * Show the badging information in HTML
+ * 
+ * */
 String JAG_webserver::createBadgingInfo() {
   String returnHTML = "<table class=\"table\">";
     returnHTML += "<thead>";
@@ -354,13 +385,23 @@ String JAG_webserver::IpAddress2String(const IPAddress& ipAddress)
 }
 
 
-
+/*
+ * 
+ * Shows a nice time since last update for the web interface
+ * 
+ * */
 String JAG_webserver::showNiceLastConnect(unsigned long last_connect) {
   String returnHTML = "";
   unsigned long difference  = millis() - last_connect;
   returnHTML += String(difference / 1000)+  "s ago";
   return returnHTML;
 }
+
+/*
+ * 
+ * Main function that parses the sensor values and shows them on the web interface
+ * 
+ * */
 
 String JAG_webserver::createHTMLpageWithContent_(String theContent) {
   String HTML_Content = "<html>";
@@ -532,6 +573,12 @@ String JAG_webserver::createHTMLpageWithContent_(String theContent) {
   return HTML_Content;
 
 }
+
+/*
+ * 
+ * Group of functions that add sensor values to an array so that they can be show in a graph
+ * 
+ * */
 
 String JAG_webserver::createJSDataForGAS(String stationId) {
   String returnJS = "";
@@ -902,7 +949,11 @@ String JAG_webserver::createJSDataForHUMIDITY(String stationId) {
  
        return returnJS;
 }
-
+/*
+ * 
+ * Some helper functions
+ * 
+ * */
 void JAG_webserver::printOutGas() {
   Serial.println("Prinitng GAS:");
    for (int i=0; i < 99; i++) {
